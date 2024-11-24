@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>My Spotify Profile</title>
+        <script src="src/script.js" type="module"></script>
+        <script src="https://cdn.plot.ly/plotly-2.24.2.min.js"></script>
+
+    </head>
+    <body>
+      <h1>Display your Spotify profile data</h1>
+      <button id="start-auth">Start with Spotifxy</button>
+      
+      
+      <section id="profile">
+        <h2>Logged in as <span id="displayName"></span></h2>
+        <span id="avatar"></span>
+        <ul>
+          <li>User ID: <span id="id"></span></li>
+          <li>Email: <span id="email"></span></li>
+          <li>Spotify URI: <a id="uri" href="#"></a></li>
+          <li>Link: <a id="url" href="#"></a></li>
+          <li>Profile Image: <span id="imgUrl"></span></li>
+      </ul>
+      </section>
+      <section>
+        <div>
+          <label for="x-axis">X-Axis:</label>
+          <select id="x-axis">
+              <option value="acousticness">Acousticness</option>
+              <option value="danceability">Danceability</option>
+              <option value="energy">Energy</option>
+              <option value="valence">Valence</option>
+              <option value="tempo">Tempo</option>
+          </select>
+      
+          <label for="y-axis">Y-Axis:</label>
+          <select id="y-axis">
+              <option value="acousticness">Acousticness</option>
+              <option value="danceability">Danceability</option>
+              <option value="energy">Energy</option>
+              <option value="valence">Valence</option>
+              <option value="tempo">Tempo</option>
+          </select>
+      
+          <label for="z-axis">Z-Axis:</label>
+          <select id="z-axis">
+              <option value="acousticness">Acousticness</option>
+              <option value="danceability">Danceability</option>
+              <option value="energy">Energy</option>
+              <option value="valence">Valence</option>
+              <option value="tempo">Tempo</option>
+          </select>
+      
+          <label for="size-axis">Marker Size:</label>
+          <select id="size-axis">
+              <option value="acousticness">Acousticness</option>
+              <option value="danceability">Danceability</option>
+              <option value="energy">Energy</option>
+              <option value="valence">Valence</option>
+              <option value="tempo">Tempo</option>
+          </select>
+      
+          <label for="color-axis">Marker Color:</label>
+          <select id="color-axis">
+              <option value="acousticness">Acousticness</option>
+              <option value="danceability">Danceability</option>
+              <option value="energy">Energy</option>
+              <option value="valence">Valence</option>
+              <option value="tempo">Tempo</option>
+          </select>
+      
+          <button id="update-plot">Update Plot</button>
+      </div>
+      <div id="scatter-plot"></div>
+      
+      </section>
+      <h2>Deine Top 50 Tracks:</h2>
+      <ol id="tracks">
+    
+      </ol>
+      
+    </body>
+</html>
