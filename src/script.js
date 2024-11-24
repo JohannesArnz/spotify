@@ -41,7 +41,7 @@ export async function redirectToAuthCodeFlow(clientId) {
     const params = new URLSearchParams();
     params.append("client_id", clientId);
     params.append("response_type", "code");
-    params.append("redirect_uri", "http://localhost:5173/callback");
+    params.append("redirect_uri", "https://johannesarnz.github.io/spotify");
     params.append("scope", "user-read-private user-read-email user-top-read user-read-recently-played"); //added user-read-recently-played user-top-read to get rights to access
     params.append("code_challenge_method", "S256");
     params.append("code_challenge", challenge);
