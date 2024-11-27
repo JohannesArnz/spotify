@@ -1,6 +1,8 @@
 let plotData = [];
 let isLoggedIn = false; // Flag für den Login-Status
 
+//const REDIRECT_URI = "https://johannesarnz.github.io/spotify";
+const REDIRECT_URI = "https://33dcb3f1-f20a-4dcd-8a87-995b271fbc0a-00-3imirkngx07n2.janeway.replit.dev/";
 
 async function startSpotifyFlow() {
     const clientId = "d4eab2556263494ea3adcd18b31bbd49"; // Replace with your client ID
@@ -41,7 +43,7 @@ export async function redirectToAuthCodeFlow(clientId) {
     const params = new URLSearchParams();
     params.append("client_id", clientId);
     params.append("response_type", "code");
-    params.append("redirect_uri", "https://johannesarnz.github.io/spotify");
+    params.append("redirect_uri", REDIRECT_URI);
     params.append("scope", "user-read-private user-read-email user-top-read user-read-recently-played"); //added user-read-recently-played user-top-read to get rights to access
     params.append("code_challenge_method", "S256");
     params.append("code_challenge", challenge);
@@ -76,7 +78,7 @@ export async function getAccessToken(clientId, code) {
     params.append("client_id", clientId);
     params.append("grant_type", "authorization_code");
     params.append("code", code);
-    params.append("redirect_uri", "https://johannesarnz.github.io/spotify");
+    params.append("redirect_uri", REDIRECT_URI);
     params.append("code_verifier", verifier);
 
     const result = await fetch("https://accounts.spotify.com/api/token", {
@@ -159,12 +161,16 @@ async function fetchTrackAudioFeatures(token, trackIdList) {
     return data.audio_features;
 }
 
+//Hier beginnt der DataPlot
+
 function preparePlotData(topTracks, audioFeatureMap, artistMap) {
-    const plotData = topTracks.items.map(track => {
+    const plotData = topTracks.items.map((track) => {
         const audioFeature = audioFeatureMap[track.id];
-        const artists = track.artists.map(artist => artistMap[artist.id]?.name || "Unknown").join(", ");
+        const artists = track.artists
+            .map((artist) => artistMap[artist.id]?.name || "Unknown")
+            .join(", ");
         const genres = track.artists
-            .flatMap(artist => artistMap[artist.id]?.genres || [])
+            .flatMap((artist) => artistMap[artist.id]?.genres || [])
             .join(", ");
 
         return {
@@ -175,9 +181,14 @@ function preparePlotData(topTracks, audioFeatureMap, artistMap) {
             danceability: audioFeature?.danceability || 0,
             energy: audioFeature?.energy || 0,
             valence: audioFeature?.valence || 0,
-            tempo: audioFeature?.tempo || 0
+            instrumentalness: audioFeature?.instrumentalness || 0,
+            key: audioFeature?.key || 0,
+            liveness: audioFeature?.liveness || 0,
+            loudness: audioFeature?.loudness || 0,
+            mode: audioFeature?.mode || 0,
+            speechiness: audioFeature?.speechiness || 0,
         };
-    });
+    }); 
 
     return plotData;
 }
@@ -185,7 +196,7 @@ function preparePlotData(topTracks, audioFeatureMap, artistMap) {
 function create3DScatterPlot(plotData, xProperty, yProperty, zProperty, sizeProperty, colorProperty) {
     const x = plotData.map(d => d[xProperty]);
     const y = plotData.map(d => d[yProperty]);
-    const z = plotData.map(d => d[zProperty]);
+    const z = plotData.map(d => d[zProperty]); // Dritte Dimension hinzufügen
     const size = plotData.map(d => d[sizeProperty] * 20); // Größe skalieren
     const color = plotData.map(d => d[colorProperty]);
 
@@ -208,13 +219,14 @@ function create3DScatterPlot(plotData, xProperty, yProperty, zProperty, sizeProp
         scene: {
             xaxis: { title: xProperty },
             yaxis: { title: yProperty },
-            zaxis: { title: zProperty }
+            zaxis: { title: zProperty } // Z-Achse hinzufügen
         },
         margin: { l: 0, r: 0, b: 0, t: 0 }
     };
 
     Plotly.newPlot("scatter-plot", [trace], layout);
 }
+
 
 document.getElementById("update-plot").addEventListener("click", () => {
     const xProperty = document.getElementById("x-axis").value;
@@ -306,7 +318,10 @@ async function populateUI(profile, topTracks, token) {
         const audioFeature = audioFeatureMap[track.id]; // Hole die Audio-Features aus der Map
         if (audioFeature) {
             const audioInfo = document.createElement("li");
-            audioInfo.textContent = `Acousticness: ${audioFeature.acousticness}, Danceability: ${audioFeature.danceability}, Energy: ${audioFeature.energy}, Valence: ${audioFeature.valence}, Tempo: ${audioFeature.tempo}`;
+            audioInfo.textContent = `Acousticness: ${audioFeature.acousticness}, Danceability: ${audioFeature.danceability}, Energy: ${audioFeature.energy}, Valence: ${audioFeature.valence}, Tempo: ${audioFeature.tempo}, Instrumentalness: ${audioFeature.instrumentalness}, Key: ${audioFeature.key}, Liveness: ${audioFeature.liveness}, Loudness: ${audioFeature.loudness}, Mode: ${audioFeature.mode}, Speechiness: ${audioFeature.speechiness}`; //fehlt, , , mode, , speachiness - Valence is music positivness 
+            //#TODO eventuell sollte ich auf der Seite noch eine Erklärung der Werte hinterlegen
+            console.log(audioInfo);
+
             subList.appendChild(audioInfo);
         } else {
             const noAudioInfo = document.createElement("li");
@@ -318,6 +333,9 @@ async function populateUI(profile, topTracks, token) {
         document.getElementById("tracks").appendChild(li);
     }
     plotData = preparePlotData(topTracks, audioFeatureMap, artistMap); // plotData global setzen
-    create3DScatterPlot(plotData, "danceability", "energy", "valence", "tempo", "acousticness");
+    create3DScatterPlot(plotData, "danceability", "energy", "valence", "tempo", "acousticness", "key");
 
 }
+
+
+//#TODO man könnte auch noch unter den Songs den jeweiligen Wert einfach in so ner Art Balken darstellen - fänd ich witzig 
